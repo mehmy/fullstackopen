@@ -66,19 +66,31 @@ const App = () => {
           `${nameObj.name} is already added to the phonebook, replace the old number with a new one?`
         )
       ) {
-        personService.update(person[0].id, nameObj).then(() => {
-          getAllPersons();
-          setNotMessage(`${nameObj.name} is updated!`);
-          setTimeout(() => setNotMessage(null), 5000);
-        });
+        personService
+          .update(person[0].id, nameObj)
+          .then(() => {
+            getAllPersons();
+            setNotMessage(`${nameObj.name} is updated!`);
+            setTimeout(() => setNotMessage(null), 5000);
+          })
+          .catch((error) => {
+            setErrorMessage(error.response.data.error);
+            setTimeout(() => setErrorMessage(null), 5000);
+          });
       }
     } else {
-      personService.create(nameObj).then((personsData) => {
-        setPersons(persons.concat(personsData));
-        nullafyNameNum();
-        setNotMessage(`${nameObj.name} is created!`);
-        setTimeout(() => setNotMessage(null), 5000);
-      });
+      personService
+        .create(nameObj)
+        .then((personsData) => {
+          setPersons(persons.concat(personsData));
+          nullafyNameNum();
+          setNotMessage(`${nameObj.name} is created!`);
+          setTimeout(() => setNotMessage(null), 5000);
+        })
+        .catch((error) => {
+          setErrorMessage(error.response.data.error);
+          setTimeout(() => setErrorMessage(null), 5000);
+        });
     }
   };
 
