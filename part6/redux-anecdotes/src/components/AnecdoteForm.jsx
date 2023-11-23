@@ -1,14 +1,14 @@
-import { useDispatch } from 'react-redux';
-import { newAnecdote } from '../reducers/anecdoteReducer';
+import { createAnecdote } from '../reducers/anecdoteReducer';
+import { setNotiTimeOut } from '../reducers/notificationReducer';
+import store from '../store';
 
 const AnecdoteForm = () => {
-  const dispatch = useDispatch();
-
   const addAnecdote = (event) => {
     event.preventDefault();
     const content = event.target.anecdote.value;
     event.target.anecdote.value = '';
-    dispatch(newAnecdote(content));
+    store.dispatch(createAnecdote(content));
+    store.dispatch(setNotiTimeOut(`You voted for "${content}" !`, 5000));
   };
   return (
     <>
