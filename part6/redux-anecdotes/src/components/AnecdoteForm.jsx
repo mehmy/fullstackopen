@@ -1,13 +1,16 @@
 import { createAnecdote } from '../reducers/anecdoteReducer';
 import { setNotiTimeOut } from '../reducers/notificationReducer';
+import anecdoteService from '../services/anecdotes';
 import store from '../store';
 
 const AnecdoteForm = () => {
-  const addAnecdote = (event) => {
+  const addAnecdote = async (event) => {
     event.preventDefault();
     const content = event.target.anecdote.value;
     event.target.anecdote.value = '';
-    store.dispatch(createAnecdote(content));
+    const newAnecdote = await anecdoteService.createNew(content);
+
+    store.dispatch(createAnecdote(newAnecdote));
     store.dispatch(setNotiTimeOut(`You voted for "${content}" !`, 5000));
   };
   return (
