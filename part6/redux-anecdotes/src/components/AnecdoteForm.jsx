@@ -8,10 +8,10 @@ const AnecdoteForm = () => {
     event.preventDefault();
     const content = event.target.anecdote.value;
     event.target.anecdote.value = '';
-    const newAnecdote = await anecdoteService.createNew(content);
-
-    store.dispatch(createAnecdote(newAnecdote));
-    store.dispatch(setNotiTimeOut(`You voted for "${content}" !`, 5000));
+    store.dispatch(createAnecdote(content));
+    store.dispatch(
+      setNotiTimeOut(`You created the anecdote  "${content}" !`, 5)
+    );
   };
   return (
     <>

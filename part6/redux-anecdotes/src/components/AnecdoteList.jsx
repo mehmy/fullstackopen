@@ -1,13 +1,10 @@
 import { useSelector } from 'react-redux';
-import { incrementVote } from '../reducers/anecdoteReducer.js';
+import { incrementVote, voteUp } from '../reducers/anecdoteReducer.js';
 import store from '../store.js';
 import { setNotiTimeOut } from '../reducers/notificationReducer.js';
 
 const AnecdoteList = () => {
   const anecdotes = useSelector((state) => {
-    console.log(state);
-    console.log(state.filter);
-    console.log(state.anecdotes);
     if (state.filter === 'ALL' || state.filter === '') {
       return state.anecdotes;
     } else {
@@ -24,8 +21,8 @@ const AnecdoteList = () => {
   };
 
   const handleClick = (id, content) => {
-    store.dispatch(incrementVote(id));
-    store.dispatch(setNotiTimeOut(`You voted for "${content}" !`, 5000));
+    store.dispatch(voteUp(id));
+    store.dispatch(setNotiTimeOut(`You voted for "${content}" !`, 5));
   };
 
   return (
