@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import { incrementVote, voteUp } from '../reducers/anecdoteReducer.js';
+import { voteUp } from '../reducers/anecdoteReducer.js';
 import store from '../store.js';
 import { setNotiTimeOut } from '../reducers/notificationReducer.js';
 

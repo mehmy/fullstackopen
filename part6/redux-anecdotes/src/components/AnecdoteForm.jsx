@@ -1,6 +1,5 @@
 import { createAnecdote } from '../reducers/anecdoteReducer';
 import { setNotiTimeOut } from '../reducers/notificationReducer';
-import anecdoteService from '../services/anecdotes';
 import store from '../store';
 
 const AnecdoteForm = () => {
