@@ -1,7 +1,9 @@
 const Blog = ({ blog }) => (
   <div>
-    {blog.title} {blog.author}
-  </div>  
-)
+    <p>
+      {blog.title} {blog.author}
+    </p>
+  </div>
+);
 
-export default Blog
+export default Blog;
