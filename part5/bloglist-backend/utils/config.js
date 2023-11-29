@@ -1,8 +1,13 @@
+require('dotenv').config();
+
 const { groupBy } = require('lodash');
 
-const dotenv = require('dotenv').config();
+const PORT = process.env.PORT;
 
-const PORT = dotenv.PORT;
+const MONGODB_URI =
+  process.env.NODE_ENV === 'test'
+    ? process.env.TEST_MONGODB_URI
+    : process.env.MONGODB_URI;
 
 const dummy = (blogs) => 1;
 
@@ -68,4 +73,6 @@ module.exports = {
   favoriteBlog,
   mostBlogs,
   mostLikes,
+  PORT,
+  MONGODB_URI,
 };
