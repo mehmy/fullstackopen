@@ -35,11 +35,13 @@ const Blog = ({ blog, setErrorMessage, setNotifMessage, user }) => {
       blogService.setToken(user.token);
       if (window.confirm(`Remove blog ${blogObject.title} by ${blog.author}`)) {
         const blog = await blogService.deleteBlog(blogObject.id);
+        setNotifMessage(
+          `blog ${blogObject.title} by ${blogObject.author} deleted!`
+        );
+        setTimeout(() => {
+          setNotifMessage(null);
+        }, 5000);
       }
-      setNotifMessage(`blog ${blog.title} by ${blog.author} deleted!`);
-      setTimeout(() => {
-        setNotifMessage(null);
-      }, 5000);
     } catch (exception) {
       setErrorMessage('issue with deleting a post');
       setTimeout(() => {
@@ -63,11 +65,18 @@ const Blog = ({ blog, setErrorMessage, setNotifMessage, user }) => {
           <div>{blog.url}</div>
           <div>
             likes: {blog.likes}{' '}
-            <button onClick={() => handleUpdate(handleVote(blog))}>like</button>
+            <button
+              id="button-like"
+              onClick={() => handleUpdate(handleVote(blog))}
+            >
+              like
+            </button>
           </div>
           <div>{blog.user.name}</div>
           <div>
-            <button onClick={() => handleDelete(blog)}>delete</button>
+            <button id="button-delete" onClick={() => handleDelete(blog)}>
+              delete
+            </button>
           </div>
         </Togglable>
       </div>
