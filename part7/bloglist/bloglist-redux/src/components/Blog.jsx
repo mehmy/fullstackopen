@@ -1,7 +1,12 @@
 import Togglable from './Togglable';
 import blogService from '../services/blogs';
+import { setNotiTimeOut } from '../reducers/notificationReducer.js';
+import { setErrorTimeOut } from '../reducers/errorReducer.js';
+import store from '../store.js';
+import { voteUp } from '../reducers/blogReducer.js';
+import { deleteBlog } from '../reducers/blogReducer.js';
 
-const Blog = ({ blog, setErrorMessage, setNotifMessage, user }) => {
+const Blog = ({ blog, user }) => {
   const blogStyle = {
     paddingTop: 10,
     paddingLeft: 2,
@@ -14,17 +19,12 @@ const Blog = ({ blog, setErrorMessage, setNotifMessage, user }) => {
     event.preventDefault();
     try {
       console.log(blogObject);
-
-      const blog = await blogService.updateBlog(blogObject);
-      setNotifMessage(`blog ${blog.title} by ${blog.author} updated!`);
-      setTimeout(() => {
-        setNotifMessage(null);
-      }, 5000);
+      store.dispatch(voteUp(blogObject));
+      store.dispatch(
+        setNotiTimeOut(`You voted for "${blogObject.title}" !`, 5)
+      );
     } catch (exception) {
-      setErrorMessage('issue with updating a post');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      store.dispatch(setErrorTimeOut('issue with updating a post', 5));
     }
   };
 
@@ -34,19 +34,16 @@ const Blog = ({ blog, setErrorMessage, setNotifMessage, user }) => {
       console.log(blogObject);
       blogService.setToken(user.token);
       if (window.confirm(`Remove blog ${blogObject.title} by ${blog.author}`)) {
-        const blog = await blogService.deleteBlog(blogObject.id);
-        setNotifMessage(
-          `blog ${blogObject.title} by ${blogObject.author} deleted!`
+        store.dispatch(deleteBlog(blogObject.id));
+        store.dispatch(
+          setNotiTimeOut(
+            `blog ${blogObject.title} by ${blogObject.author} deleted!`,
+            5
+          )
         );
-        setTimeout(() => {
-          setNotifMessage(null);
-        }, 5000);
       }
     } catch (exception) {
-      setErrorMessage('issue with deleting a post');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      store.dispatch(setErrorTimeOut('issue with deleting a post', 5));
     }
   };
 

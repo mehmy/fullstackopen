@@ -1,32 +1,38 @@
 import { useState, useEffect, useRef } from 'react';
 import Blog from './components/Blog';
-import blogService from './services/blogs';
 import loginService from './services/login';
 import Notification from './components/Notification';
-import ErrorMessage from './components/ErrorMessage';
 import LoginForm from './components/Loginform';
 import BlogForm from './components/BlogForm';
 import Togglable from './components/Togglable';
+import { useSelector } from 'react-redux';
+import { setNotiTimeOut } from './reducers/notificationReducer.js';
+import { setErrorTimeOut } from './reducers/errorReducer.js';
+import store from './store.js';
+import { initializeBlogs } from './reducers/blogReducer.js';
+import { createBlogThunk } from './reducers/blogReducer.js';
+import { setUserFunc, resetUserFunc } from './reducers/userReducer.js';
+import blogService from './services/blogs.js';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
-  const [notifMessage, setNotifMessage] = useState('');
-  const [user, setUser] = useState(null);
-  const [loginVisible, setLoginVisible] = useState(false);
   const blogFormRef = useRef();
 
   useEffect(() => {
-    blogService.getAll().then((blogs) => setBlogs(blogs));
-  }, [notifMessage]);
+    store.dispatch(initializeBlogs());
+  }, [useSelector((state) => state.notification)]);
+
+  const blogs = useSelector((state) => state.blogs);
+
+  const user = useSelector((state) => state.user);
+  const tokenGlobal = useSelector((state) => state.user.token);
 
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser');
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON);
-      setUser(user);
+      store.dispatch(setUserFunc(user));
     }
   }, []);
 
@@ -40,53 +46,49 @@ const App = () => {
       window.localStorage.setItem('loggedBlogAppUser', JSON.stringify(user));
       console.log(window.localStorage.getItem('loggedBlogAppUser'));
       console.log(user.token);
-      blogService.setToken(user.token);
-      setUser(user);
+      store.dispatch(setUserFunc(user));
+      blogService.setToken(token);
       setUsername('');
       setPassword('');
-      setNotifMessage(`${user.name} logged in successfully`);
-      setTimeout(() => {
-        setNotifMessage(null);
-      }, 5000);
+      store.dispatch(setNotiTimeOut(`${user.name} logged in successful`, 5));
     } catch (exception) {
-      setErrorMessage('Username or password incorrect');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      store.dispatch(setErrorTimeOut('Username or password incorrect', 5));
     }
   };
 
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogAppUser');
-    setUser(null);
+    resetUserFunc();
   };
 
   const createBlog = async (blogObject) => {
     event.preventDefault();
     try {
-      blogService.setToken(user.token);
       blogFormRef.current.toggleVisibility();
-      const blog = await blogService.create(blogObject);
-
-      setBlogs([...blogs, { ...blog }]);
-      setNotifMessage(`a new blog ${blog.title} by ${blog.author} added!`);
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      store.dispatch(createBlogThunk(blogObject, tokenGlobal));
+      store.dispatch(
+        setNotiTimeOut(
+          `a new blog ${blogObject.title} by ${blogObject.author} added!`,
+          5
+        )
+      );
     } catch (exception) {
-      setErrorMessage('issue with creating a post');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      store.dispatch(setErrorTimeOut('issue with creating a post', 5));
     }
   };
 
+  const sortBlogs = (blogs) => {
+    console.log(blogs);
+    const arrayForSort = [...blogs];
+    return arrayForSort.sort((a, b) => b.likes - a.likes);
+  };
   return (
     <div>
       <h2>Blogs</h2>
-      {notifMessage !== '' && <Notification message={notifMessage} />}
-      {errorMessage !== '' && <ErrorMessage message={errorMessage} />}
-      {user === null ? (
+      {useSelector((state) => state.notification) !== '' && <Notification />}
+      {useSelector((state) => state.error) !== '' && <Notification />}
+
+      {useSelector((state) => state.user) < 1 ? (
         <Togglable buttonLabel="login">
           <LoginForm
             handleLogin={() => handleLogin}
@@ -98,7 +100,7 @@ const App = () => {
         </Togglable>
       ) : (
         <div>
-          {user.name} is logged in{' '}
+          {`${user.name} is logged in`}
           <button onClick={() => handleLogout()}>Logout</button>
           <h2>create new</h2>
           <Togglable buttonLabel="blog" ref={blogFormRef}>
@@ -107,15 +109,9 @@ const App = () => {
         </div>
       )}
       {}
-      {console.log(blogs.sort((a, b) => b.likes - a.likes))}
-      {blogs.map((blog) => (
-        <Blog
-          key={blog.id}
-          blog={blog}
-          setErrorMessage={setErrorMessage}
-          setNotifMessage={setNotifMessage}
-          user={user}
-        />
+      {/* {console.log(blogs.sort((a, b) => b.likes - a.likes))} */}
+      {sortBlogs(blogs).map((blog) => (
+        <Blog key={blog.id} blog={blog} user={user} />
       ))}
     </div>
   );

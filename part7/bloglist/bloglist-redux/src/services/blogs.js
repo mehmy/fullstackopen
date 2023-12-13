@@ -8,6 +8,7 @@ const setToken = (newToken) => {
 };
 
 const create = async (newObject) => {
+  console.log('bokdgi', token);
   const config = {
     headers: { Authorization: token },
   };
