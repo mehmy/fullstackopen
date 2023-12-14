@@ -26,10 +26,14 @@ const blogSlice = createSlice({
     setBlogs(state, action) {
       return action.payload;
     },
+    appendComment(state, action) {
+      state.comments.push(action.payload);
+    },
   },
 });
 
-export const { incrementVote, appendBlog, setBlogs } = blogSlice.actions;
+export const { incrementVote, appendBlog, setBlogs, appendComment } =
+  blogSlice.actions;
 
 export const initializeBlogs = () => {
   return async (dispatch) => {
@@ -63,5 +67,10 @@ export const deleteBlog = (id) => {
     initializeBlogs();
   };
 };
-
+export const addComment = (comment, id) => {
+  return async (dispatch) => {
+    const commentBlog = await blogService.addComment(comment, id);
+    initializeBlogs();
+  };
+};
 export default blogSlice.reducer;

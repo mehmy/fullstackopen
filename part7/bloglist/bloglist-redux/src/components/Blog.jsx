@@ -5,16 +5,9 @@ import { setErrorTimeOut } from '../reducers/errorReducer.js';
 import store from '../store.js';
 import { voteUp } from '../reducers/blogReducer.js';
 import { deleteBlog } from '../reducers/blogReducer.js';
+import { Link } from 'react-router-dom';
 
 const Blog = ({ blog, user }) => {
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
-  };
-
   const handleUpdate = async (blogObject) => {
     event.preventDefault();
     try {
@@ -55,9 +48,11 @@ const Blog = ({ blog, user }) => {
   };
 
   return (
-    <div style={blogStyle}>
+    <div>
       <div>
-        {blog.title} {blog.author}
+        <Link to={`/blogs/${blog.id}`}>
+          {blog.title} {blog.author}
+        </Link>
         <Togglable buttonLabel="view" buttonClose="hide">
           <div>{blog.url}</div>
           <div>
