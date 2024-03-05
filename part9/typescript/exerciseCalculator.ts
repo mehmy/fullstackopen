@@ -1,14 +1,14 @@
-interface Result {
+export interface Result {
   numberDays: number;
-  trainingDays: Number;
-  originalTarget: Number;
-  averageTime: Number;
-  targetReached: Boolean;
+  trainingDays: number;
+  originalTarget: number;
+  averageTime: number;
+  targetReached: boolean;
   rating: number;
-  ratingText: String;
+  ratingText: string;
 }
 
-const parseArguments = (args: string[]): Result => {
+export const parseArguments = (args: string[]): Result => {
   if (args.length < 4) throw new Error('Not enough arguments');
 
   // args.forEach((arg) => {
